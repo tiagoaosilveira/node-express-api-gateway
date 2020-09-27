@@ -1,22 +1,25 @@
 const express = require('express')
 const axios = require('axios');
+const mongoose = require('mongoose');
+const db = require("./database/config");
+const GatewayService = require("./services/GatewayService");
 const app = express()
 const port = 3001
 
-let routes = {
-    "about" : "/about"
-}
+mongoose.connect(db.uri, { useNewUrlParser: true });
+
 
 app.get('/*', function(req, res) {
-    async function getUser() {
+    async function requestAndReturn() {
         try {
-          const response = await axios.get(`http://localhost:3000${routes[req.params[0]]}`);
-          console.log(response);
+          const data = await GatewayService.index(req.params[0]);
+          const response = await axios.get(`http://localhost:3000${data}`);
+          console.log(response.data);
         } catch (error) {
           console.error(error);
         }
     }
-    getUser();
+    requestAndReturn();
     
 });
 
